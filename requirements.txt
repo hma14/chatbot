@@ -1,7 +1,5 @@
 Flask
 gunicorn
 openai
-request
-render_template
+requests
 os
-sys
