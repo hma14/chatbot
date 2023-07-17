@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!--<link rel="icon" href="%PUBLIC_URL%/favicon.ico" /> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    
+    <link rel="stylesheet" href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href = "/static/index.css">
+  
+  </head>
+  <body>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">    
+    </script>
+
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+
+    
+    
+    <div class="container-fluid mt-4">  
+      <form id="myForm" action="/chat" method="post"  novalidate>
+        <div class="mb-3">
+          <textarea name="text" class="form-control bg-dark rounded-element text-light fst-italic placeholder-textarea" id="textInput" rows="1" placeholder="User Prompt:"></textarea>
+        </div>       
+      </form>
+   
+      <div class="spinner" id="spinner"></div>
+      <div id="result" class="form-control mt-4 col-lg-12 bg-secondary text-light rounded-element fst-italic">Chat Reply</div>  
+    </div>
+   
+      
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var spinner = document.getElementById('spinner');
+            var textInput = document.getElementById('textInput');
+        
+            // Hide the spinner initially
+            spinner.classList.add('hidden');
+        
+         
+        });
+        
+      
+        $('form').submit(function(event) {
+            event.preventDefault();
+
+            var form = $(this);
+            var url = form.attr('action');
+            var formData = form.serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: formData,
+                success: function(response) {
+                    //console.log(response)
+                    spinner.classList.add('hidden');
+                    $('#result').text(response);
+                }
+            });
+        });
+      
+        $(document).ready(function() {
+            $('#textInput').keydown(function(event) {
+                if (event.keyCode === 13) {
+                  spinner.classList.remove('hidden');
+                  event.preventDefault();  // Prevent default behavior of the "Enter" key
+                  $('#myForm').submit();    // Submit the form   
+                  textInput.blur();
+                    
+                }
+            });
+        });
+
+
+      $(document).ready(function() {
+        $('.placeholder-textarea').each(function() {
+          var placeholderText = $(this).attr('placeholder');
+          $(this).val(placeholderText);
+      
+          $(this).on('focus', function() {
+            if ($(this).val() === placeholderText) {
+              $(this).val('');
+            }
+          });
+      
+          $(this).on('blur', function() {
+            if ($(this).val() === '') {
+              $(this).val(placeholderText);
+            }
+          });
+        });
+      });
+      
+      
+    </script>
+    
+  </body>
+</html>
