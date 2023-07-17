@@ -2,4 +2,3 @@ Flask
 gunicorn
 openai
 requests
-os
