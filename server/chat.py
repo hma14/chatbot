@@ -22,4 +22,4 @@ def start_chat(content):
   #print(f'ChatGPT: {chat_response}')
   messages.append({"role": "assistant", "content": chat_response})
 
-  return f'ChatGPT: {chat_response}'
+  return chat_response

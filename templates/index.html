@@ -44,6 +44,7 @@
          
         });
 
+        // Function to display response text slowly character by character
         function slowDisplay(text, targetElement) {
             var currentIndex = 0;
             var interval = setInterval(function() {
@@ -53,6 +54,21 @@
                     clearInterval(interval);
                 }
             }, 100); // Adjust the interval (in milliseconds) to control the speed of display
+        }
+
+        // Function to display response text slowly word by word
+        function slowDisplayByWord(text, targetElement) {
+            var words = text.split(' ');
+            var currentWordIndex = 0;
+
+            var interval = setInterval(function() {
+                if (currentWordIndex < words.length) {
+                    targetElement.text(words.slice(0, currentWordIndex + 1).join(' '));
+                    currentWordIndex++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 500); // Adjust the interval (in milliseconds) to control the speed of display
         }
       
         $('form').submit(function(event) {
@@ -71,6 +87,8 @@
                     spinner.classList.add('hidden');
                     //$('#result').text(response);
                     slowDisplay(response, $('#result'));
+                    //slowDisplayByWord(response, $('#result'));
+                  
                 }
             });
         });
