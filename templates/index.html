@@ -43,7 +43,17 @@
         
          
         });
-        
+
+        function slowDisplay(text, targetElement) {
+            var currentIndex = 0;
+            var interval = setInterval(function() {
+                targetElement.text(text.substring(0, currentIndex + 1));
+                currentIndex++;
+                if (currentIndex >= text.length) {
+                    clearInterval(interval);
+                }
+            }, 100); // Adjust the interval (in milliseconds) to control the speed of display
+        }
       
         $('form').submit(function(event) {
             event.preventDefault();
@@ -59,7 +69,8 @@
                 success: function(response) {
                     //console.log(response)
                     spinner.classList.add('hidden');
-                    $('#result').text(response);
+                    //$('#result').text(response);
+                    slowDisplay(response, $('#result'));
                 }
             });
         });
