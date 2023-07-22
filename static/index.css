@@ -40,3 +40,10 @@ html, body {
   outline: none;
   border: none;
 }
+
+.volume-up {
+  fas fa-volume-up
+}
+.mute {
+  fas fa-volume-mute
+}

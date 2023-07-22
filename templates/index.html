@@ -8,7 +8,18 @@
     
     <link rel="stylesheet" href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href = "/static/index.css">
-  
+
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .sound-button {
+            /* Add styles for the button here */
+        }
+
+        .sound-button i {
+            /* Add styles for the icon here */
+            margin-right: 5px; /* Add some spacing between the icon and text */
+        }
+    </style>
   </head>
   <body>
     <script
@@ -28,19 +39,26 @@
    
       <div class="spinner" id="spinner"></div>
       <div id="result" class="form-control mt-4 col-lg-12 bg-secondary text-light rounded-element fst-italic">Reply</div>  
+      <div class="mt-4 right">
+        <button id="sound" class="btn btn-primary btn-outline-light" onclick="speakText()">
+          <i class="fas fa-volume-up"></i></button>
+      </div>
     </div>
    
       
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        var result = null;
         document.addEventListener('DOMContentLoaded', function() {
             var spinner = document.getElementById('spinner');
+            var sound = document.getElementById('sound');
             var textInput = document.getElementById('textInput');
         
             // Hide the spinner initially
             spinner.classList.add('hidden');
-        
+            //sound.classList.add('hidden');
+           
          
         });
 
@@ -77,6 +95,7 @@
             var form = $(this);
             var url = form.attr('action');
             var formData = form.serialize();
+          
 
             $.ajax({
                 type: 'POST',
@@ -86,6 +105,8 @@
                     //console.log(response)
                     spinner.classList.add('hidden');
                     //$('#result').text(response);
+                    $result = response;
+                    sound.classList.remove('hidden');
                     slowDisplay(response, $('#result'));
                     //slowDisplayByWord(response, $('#result'));
                   
@@ -125,7 +146,13 @@
         });
       });
       
-      
+
+
+      function speakText() {
+          const message = new SpeechSynthesisUtterance();
+          message.text = $result; // $("#result").text(); 
+          window.speechSynthesis.speak(message);
+      }
     </script>
     
   </body>
