@@ -8,23 +8,15 @@
     
     <link rel="stylesheet" href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href = "/static/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        .sound-button {
-            /* Add styles for the button here */
-        }
-
-        .sound-button i {
-            /* Add styles for the icon here */
-            margin-right: 5px; /* Add some spacing between the icon and text */
-        }
-    </style>
-  </head>
-  <body>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">    
     </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+  </head>
+  <body>
 
     <noscript>You need to enable JavaScript to run this app.</noscript>
 
@@ -33,8 +25,8 @@
     <div class="container-fluid mt-4">  
       <form id="myForm" class="myForm" action="/chat" method="post"  novalidate>
         <div class="mb-3">
-          <textarea name="text" class="form-control col-lg-12 bg-dark rounded-element text-light fst-italic placeholder-textarea " id="textInput" rows="1" placeholder="Prompt your question:"></textarea>
-        </div>       
+          <textarea name="text" class="form-control col-lg-10 bg-dark rounded-element text-light fst-italic placeholder-textarea " id="textInput" rows="1" placeholder="Prompt your question:"></textarea>
+        </div>        
       </form>
    
       <div class="spinner" id="spinner"></div>
@@ -47,97 +39,89 @@
    
       
     
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
     <script>
-        var result = null;
-        document.addEventListener('DOMContentLoaded', function() {
-            var spinner = document.getElementById('spinner');
-            var sound = document.getElementById('sound');
-            var textInput = document.getElementById('textInput');
+      var result = null;
+      document.addEventListener('DOMContentLoaded', function() {
+          var spinner = document.getElementById('spinner');
+          var sound = document.getElementById('sound');
+          var textInput = document.getElementById('textInput');
+          var textOutput = document.getElementById('result');
+      
+          // Hide the spinner initially
+          spinner.classList.add('hidden');
+          sound.classList.add('hidden');            
+      });
+
+      // Function to display response text slowly character by character
+      function slowDisplay(text, targetElement) {
+          var currentIndex = 0;
+          var interval = setInterval(function() {
+              targetElement.text(text.substring(0, currentIndex + 1));
+              currentIndex++;
+              if (currentIndex >= text.length) {
+                  clearInterval(interval);
+              }
+          }, 100); // Adjust the interval (in milliseconds) to control the speed of display
+      }
+
+      // Function to display response text slowly word by word
+      function slowDisplayByWord(text, targetElement) {
+          var words = text.split(' ');
+          var currentWordIndex = 0;
+
+          var interval = setInterval(function() {
+              if (currentWordIndex < words.length) {
+                  targetElement.text(words.slice(0, currentWordIndex + 1).join(' '));
+                  currentWordIndex++;
+              } else {
+                  clearInterval(interval);
+              }
+          }, 500); // Adjust the interval (in milliseconds) to control the speed of display
+      }
+    
+      $('form').submit(function(event) {
+          event.preventDefault();
+
+          var form = $(this);
+          var url = form.attr('action');
+          var formData = form.serialize();
         
-            // Hide the spinner initially
-            spinner.classList.add('hidden');
-            sound.classList.add('hidden');
-           
-         
-        });
-
-        // Function to display response text slowly character by character
-        function slowDisplay(text, targetElement) {
-            var currentIndex = 0;
-            var interval = setInterval(function() {
-                targetElement.text(text.substring(0, currentIndex + 1));
-                currentIndex++;
-                if (currentIndex >= text.length) {
-                    clearInterval(interval);
-                }
-            }, 100); // Adjust the interval (in milliseconds) to control the speed of display
-        }
-
-        // Function to display response text slowly word by word
-        function slowDisplayByWord(text, targetElement) {
-            var words = text.split(' ');
-            var currentWordIndex = 0;
-
-            var interval = setInterval(function() {
-                if (currentWordIndex < words.length) {
-                    targetElement.text(words.slice(0, currentWordIndex + 1).join(' '));
-                    currentWordIndex++;
-                } else {
-                    clearInterval(interval);
-                }
-            }, 500); // Adjust the interval (in milliseconds) to control the speed of display
-        }
+          $.ajax({
+              type: 'POST',
+              url: url,
+              data: formData,
+              success: function(response) {
+                  //console.log(response)
+                  spinner.classList.add('hidden');
+                  //$('#result').text(response);
+                  $result = response;
+                  sound.classList.remove('hidden');
+                  slowDisplay(response, $('#result'));
+                  //slowDisplayByWord(response, $('#result'));                
+              }
+          });
+      });
       
-        $('form').submit(function(event) {
-            event.preventDefault();
-
-            var form = $(this);
-            var url = form.attr('action');
-            var formData = form.serialize();
-          
-
-            $.ajax({
-                type: 'POST',
-                url: url,
-                data: formData,
-                success: function(response) {
-                    //console.log(response)
-                    spinner.classList.add('hidden');
-                    //$('#result').text(response);
-                    $result = response;
-                    sound.classList.remove('hidden');
-                    slowDisplay(response, $('#result'));
-                    //slowDisplayByWord(response, $('#result'));
-                  
-                }
-            });
-        });
-      
-        $(document).ready(function() {
-            $('#textInput').keydown(function(event) {
-                if (event.keyCode === 13) {
-                  spinner.classList.remove('hidden');
-                  event.preventDefault();  // Prevent default behavior of the "Enter" key
-                  $('#myForm').submit();    // Submit the form   
-                  textInput.blur();
-                    
-                }
-            });
-        });
+      $(document).ready(function() {
+          $('#textInput').keydown(function(event) {
+              if (event.keyCode === 13) {
+                spinner.classList.remove('hidden');
+                event.preventDefault();   // Prevent default behavior of the "Enter" key
+                $('#myForm').submit();    // Submit the form   
+                textInput.blur();                  
+              }
+          });
+      });
 
 
       $(document).ready(function() {
         $('.placeholder-textarea').each(function() {
           var placeholderText = $(this).attr('placeholder');
-          $(this).val(placeholderText);
-      
+          $(this).val(placeholderText);     
           $(this).on('focus', function() {
-            if ($(this).val() === placeholderText) {
-              $(this).val('');
-            }
-          });
-      
+            $(this).val('');            
+          });      
           $(this).on('blur', function() {
             if ($(this).val() === '') {
               $(this).val(placeholderText);
@@ -147,12 +131,12 @@
       });
       
 
-
       function speakText() {
           const message = new SpeechSynthesisUtterance();
-          message.text = $result; // $("#result").text(); 
+          message.text = $result;  
           window.speechSynthesis.speak(message);
       }
+      
     </script>
     
   </body>
